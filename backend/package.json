@@ -1,0 +1,20 @@
+{
+  "name": "jallua",
+  "version": "0.0.1",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "test": "echo \"Error: no tests specified\" && exit 1",
+    "lint": "eslint **/*.js"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.9.1",
+    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-jsx-a11y": "^2.2.3"
+  }
+}
