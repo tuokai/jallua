@@ -1,0 +1,7 @@
+{
+  "apiUrls": {
+    "alko": {
+      "jsonStores": "http://www.alko.fi/api/find/stores?Language=fi&Page=1&PageSize=400&ProductIds=&Query=&SingleGrape=false&Sort=1"
+    }
+  }
+}

@@ -16,3 +16,11 @@ Start server:
 ```
 npm run
 ```
+
+## API endpoints
+
+`GET location/store/cities` - gets list of cities where Alko has one or more store.
+
+## Additional notes
+### Caching
+Stores data is relatively static. On the first start, server fetches the data and saves it to local `cache/` folder.
