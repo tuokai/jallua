@@ -16,4 +16,14 @@ module.exports = (app) => {
     }
     res.json(cities);
   });
+
+  app.get('/location/addresses', (req, res) => {
+    const addresses = dataHandling.addresses;
+    if (addresses.length === 0) {
+      res.status(500);
+    } else {
+      res.status(200);
+    }
+    res.json(addresses);
+  });
 };

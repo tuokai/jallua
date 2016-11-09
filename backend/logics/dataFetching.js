@@ -4,6 +4,7 @@ const request = require('superagent');
 const config = require('../config');
 
 const storesJSON = path.join(__dirname, '../cache/stores.json');
+const addressesTsv = path.join(__dirname, '../cache/addresses.tsv');
 
 const updateStores = () => {
   request
@@ -24,6 +25,24 @@ const updateStores = () => {
     });
 };
 
+const updateAddresses = () => {
+  request
+    .get(config.apiUrls.alko.tsvAddresses)
+    .end((err, res) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      fs.writeFile(addressesTsv, res.text, (writeError) => {
+        if (writeError) {
+          console.log('Failed to save address data:', writeError);
+        } else {
+          console.log('Address data fetched & saved to cache');
+        }
+      });
+    });
+};
+
 const updateCache = () => {
   // eslint-disable-next-line no-unused-vars
   fs.stat(storesJSON, (err, stat) => {
@@ -36,8 +55,21 @@ const updateCache = () => {
       console.log('Error:', err.code);
     }
   });
+
+  // eslint-disable-next-line no-unused-vars
+  fs.stat(addressesTsv, (err, stat) => {
+    if (!err) {
+      console.log('Addressess already found from cache');
+      // TODO: Check timestamp of file and re-fetch data if contents are too old
+    } else if (err.code === 'ENOENT') {
+      updateAddresses();
+    } else {
+      console.log('Error:', err.code);
+    }
+  });
 };
 
 updateCache();
 
 exports.storesJSON = storesJSON;
+exports.addressesTsv = addressesTsv;

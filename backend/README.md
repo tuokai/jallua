@@ -23,4 +23,11 @@ npm run
 
 ## Additional notes
 ### Caching
-Stores data is relatively static. On the first start, server fetches the data and saves it to local `cache/` folder.
+Data fetched by server is relatively static. On the first start, server fetches the data and saves it to local `cache/` folder.
+Cache can be cleared by running
+```
+npm run cache:clear
+```
+
+### Known issues
+- Server does not utilize data that is fetched on same execution. Practically this makes all current API endpoints unusable. Workaround is to restrart server after data has been fetched & cached. This has to be done only once.
