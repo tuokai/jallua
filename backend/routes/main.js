@@ -14,6 +14,6 @@ module.exports = (app) => {
     } else {
       res.status(200);
     }
-    res.json(cities)
+    res.json(cities);
   });
 };
