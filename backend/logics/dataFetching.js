@@ -1,16 +1,12 @@
-const fs = require('fs');
-const path = require('path');
 const request = require('superagent');
+const mongoose = require('mongoose');
+
+require('../models/store');
+
 const config = require('../config');
+const dataHandling = require('./dataHandling');
 
-const storesJSON = path.join(__dirname, '../cache/stores.json');
-const addressesTsv = path.join(__dirname, '../cache/addresses.tsv');
-
-const fetchStores = () => (
-  request
-    .get(config.apiUrls.alko.jsonStores)
-    .then(res => res.body, err => console.log('Error when fetching stores', err))
-);
+const Store = mongoose.models.Store;
 
 const fetchAddresses = () => (
   request
@@ -18,59 +14,35 @@ const fetchAddresses = () => (
     .then(res => res.text, err => console.log('Error when fetching addresses', err))
 );
 
-const storeStoresToCache = () => {
-  fetchStores().then((stores) => {
-    fs.writeFile(storesJSON, JSON.stringify(stores), (writeError) => {
-      if (writeError) {
-        console.log('Failed to save stores data:', writeError);
-      } else {
-        console.log('Stores data fetched & saved to cache');
-      }
-    });
-  })
-  .catch(err => console.log(err));
-};
-
-const storeAddressesToCache = () => {
+const storeAddressesToDb = () => {
   fetchAddresses().then((addresses) => {
-    fs.writeFile(addressesTsv, addresses, (writeError) => {
-      if (writeError) {
-        console.log('Failed to save address data:', writeError);
-      } else {
-        console.log('Address data fetched & saved to cache');
-      }
+    const parsed = dataHandling.parseAddressResponse(addresses);
+    parsed.forEach((item) => {
+      Store.findOne({ storeNumber: item.storeNumber }, (err, store) => {
+        if (err) {
+          console.log('db error:', err);
+        }
+        if (!store) {
+          // Store is not yet saved to DB
+          new Store(item).save((saveError) => {
+            if (saveError) {
+              console.log('Failed to save item to db', saveError);
+            }
+          });
+        } else {
+          // Same store with same id is already in DB
+          // Here we could check if we want to update information, but probably it is quite safe
+          // to think that store address does not change too often.
+        }
+      });
     });
+    console.log('Address data fetched & saved to db');
   })
   .catch(err => console.log(err));
 };
 
-const updateCache = () => {
-  // eslint-disable-next-line no-unused-vars
-  fs.stat(storesJSON, (err, stat) => {
-    if (!err) {
-      console.log('Stores already found from cache');
-      // TODO: Check timestamp of file and re-fetch data if contents are too old
-    } else if (err.code === 'ENOENT') {
-      storeStoresToCache();
-    } else {
-      console.log('Error:', err.code);
-    }
-  });
-
-  // eslint-disable-next-line no-unused-vars
-  fs.stat(addressesTsv, (err, stat) => {
-    if (!err) {
-      console.log('Addressess already found from cache');
-      // TODO: Check timestamp of file and re-fetch data if contents are too old
-    } else if (err.code === 'ENOENT') {
-      storeAddressesToCache();
-    } else {
-      console.log('Error:', err.code);
-    }
-  });
+const updateDb = () => {
+  storeAddressesToDb();
 };
 
-updateCache();
-
-exports.storesJSON = storesJSON;
-exports.addressesTsv = addressesTsv;
+exports.updateDb = updateDb;
