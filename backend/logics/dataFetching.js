@@ -6,41 +6,42 @@ const config = require('../config');
 const storesJSON = path.join(__dirname, '../cache/stores.json');
 const addressesTsv = path.join(__dirname, '../cache/addresses.tsv');
 
-const updateStores = () => {
+const fetchStores = () => (
   request
     .get(config.apiUrls.alko.jsonStores)
-    .end((err, res) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
+    .then(res => res.body, err => console.log('Error when fetching stores', err))
+);
 
-      fs.writeFile(storesJSON, JSON.stringify(res.body), (writeError) => {
-        if (writeError) {
-          console.log('Failed to save stores data:', writeError);
-        } else {
-          console.log('Stores data fetched & saved to cache');
-        }
-      });
-    });
-};
-
-const updateAddresses = () => {
+const fetchAddresses = () => (
   request
     .get(config.apiUrls.alko.tsvAddresses)
-    .end((err, res) => {
-      if (err) {
-        console.log(err);
-        return;
+    .then(res => res.text, err => console.log('Error when fetching addresses', err))
+);
+
+const storeStoresToCache = () => {
+  fetchStores().then((stores) => {
+    fs.writeFile(storesJSON, JSON.stringify(stores), (writeError) => {
+      if (writeError) {
+        console.log('Failed to save stores data:', writeError);
+      } else {
+        console.log('Stores data fetched & saved to cache');
       }
-      fs.writeFile(addressesTsv, res.text, (writeError) => {
-        if (writeError) {
-          console.log('Failed to save address data:', writeError);
-        } else {
-          console.log('Address data fetched & saved to cache');
-        }
-      });
     });
+  })
+  .catch(err => console.log(err));
+};
+
+const storeAddressesToCache = () => {
+  fetchAddresses().then((addresses) => {
+    fs.writeFile(addressesTsv, addresses, (writeError) => {
+      if (writeError) {
+        console.log('Failed to save address data:', writeError);
+      } else {
+        console.log('Address data fetched & saved to cache');
+      }
+    });
+  })
+  .catch(err => console.log(err));
 };
 
 const updateCache = () => {
@@ -50,7 +51,7 @@ const updateCache = () => {
       console.log('Stores already found from cache');
       // TODO: Check timestamp of file and re-fetch data if contents are too old
     } else if (err.code === 'ENOENT') {
-      updateStores();
+      storeStoresToCache();
     } else {
       console.log('Error:', err.code);
     }
@@ -62,7 +63,7 @@ const updateCache = () => {
       console.log('Addressess already found from cache');
       // TODO: Check timestamp of file and re-fetch data if contents are too old
     } else if (err.code === 'ENOENT') {
-      updateAddresses();
+      storeAddressesToCache();
     } else {
       console.log('Error:', err.code);
     }
