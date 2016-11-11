@@ -5,8 +5,7 @@
   "scripts": {
     "start": "node server",
     "test": "echo \"Error: no tests specified\" && exit 1",
-    "lint": "eslint **/*.js",
-    "cache:clear": "rm cache/*"
+    "lint": "eslint **/*.js"
   },
   "license": "UNLICENSED",
   "dependencies": {
