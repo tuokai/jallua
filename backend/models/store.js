@@ -5,6 +5,10 @@ const storeSchema = mongoose.Schema({
   streetAddress: String,
   zipCode: String,
   postOffice: String,
+  location: {
+    type: { type: String, default: 'Point' },
+    coordinates: [Number], // [Long, Lat]
+  },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });
@@ -18,6 +22,9 @@ storeSchema.pre('save', (next) => {
   }
   next();
 });
+
+// Index this schema in 2dsphere format (critical for running proximity searches)
+storeSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Store', storeSchema);
 

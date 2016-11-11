@@ -14,6 +14,22 @@ const fetchAddresses = () => (
     .then(res => res.text, err => console.log('Error when fetching addresses', err))
 );
 
+const mapAddressToCoordinates = (address) => {
+  const urlFriendlyStreetAddress = encodeURI(address);
+  const apiKey = config.apiKeys.google;
+  const apiUrl = config.apiUrls.google.maps.geocode;
+  const requestUrl = `${apiUrl}/json?address=${urlFriendlyStreetAddress}&key=${apiKey}`;
+  return request
+    .get(requestUrl)
+    .then((res) => {
+      const coordinates = res.body.results[0].geometry.location;
+      // Return coordinates in format that can be used as mongodb location
+      return [coordinates.lng, coordinates.lat];
+    }, (err) => {
+      console.log(`Error: failed to map address "${address}" to coordinates, error:`, err);
+    });
+};
+
 const storeAddressesToDb = () => {
   fetchAddresses().then((addresses) => {
     const parsed = dataHandling.parseAddressResponse(addresses);
@@ -24,10 +40,20 @@ const storeAddressesToDb = () => {
         }
         if (!store) {
           // Store is not yet saved to DB
-          new Store(item).save((saveError) => {
-            if (saveError) {
-              console.log('Failed to save item to db', saveError);
-            }
+          // Get coordinates of store from google maps api
+          const { streetAddress, zipCode, postOffice } = item;
+          const addressString = `${streetAddress}, ${zipCode} ${postOffice}`;
+          mapAddressToCoordinates(addressString)
+          .then((coordinates) => {
+            const dbEntry = Object.assign({}, item, { location: { type: 'Point', coordinates } });
+            new Store(dbEntry).save((saveError) => {
+              if (saveError) {
+                console.log('Failed to save item to db', saveError);
+              }
+            });
+          })
+          .catch((locationErr) => {
+            console.log('Failed to map address to coordinates', locationErr);
           });
         } else {
           // Same store with same id is already in DB

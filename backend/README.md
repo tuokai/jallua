@@ -21,3 +21,8 @@ npm run
 ## API endpoints
 
 `GET stores` - gets list of Alko's stores & their addresses
+
+`GET stores/closest` - gets store numbers of Alko stores near requested location, sorted by distance. Closest is first.
+
+Expected query params:
+`lat` and `lng`

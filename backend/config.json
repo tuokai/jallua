@@ -3,6 +3,14 @@
     "alko": {
       "jsonStores": "http://www.alko.fi/api/find/stores?Language=fi&Page=1&PageSize=400&ProductIds=&Query=&SingleGrape=false&Sort=1",
       "tsvAddresses": "http://www.alko.fi/myymala/liitetiedostot/myymalatfi/$File/myymos.txt"
+      },
+    "google": {
+      "maps": {
+        "geocode": "https://maps.googleapis.com/maps/api/geocode"
+      }
     }
+  },
+  "apiKeys": {
+    "google": "<YOUR_API_KEY>"
   }
 }
