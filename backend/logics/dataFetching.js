@@ -16,7 +16,7 @@ const fetchAddresses = () => (
 
 const mapAddressToCoordinates = (address) => {
   const urlFriendlyStreetAddress = encodeURI(address);
-  const apiKey = config.apiKeys.google;
+  const apiKey = process.env.GMAPS_API_KEY || config.apiKeys.google;
   const apiUrl = config.apiUrls.google.maps.geocode;
   const requestUrl = `${apiUrl}/json?address=${urlFriendlyStreetAddress}&key=${apiKey}`;
   return request
