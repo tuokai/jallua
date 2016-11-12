@@ -13,7 +13,12 @@ module.exports = (app) => {
       if (err) {
         return res.status(500).json(err);
       }
-      return res.status(200).json(stores);
+      const response = stores.map((store) => {
+        // Strip out unwanted parts of store object
+        const { streetAddress, zipCode, postOffice, storeNumber } = store;
+        return { streetAddress, zipCode, postOffice, storeNumber };
+      });
+      return res.status(200).json(response);
     });
   });
 
