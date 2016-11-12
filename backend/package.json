@@ -8,6 +8,9 @@
     "lint": "eslint **/*.js"
   },
   "license": "UNLICENSED",
+   "engines": {
+    "node": "^7.0.0"
+  },
   "dependencies": {
     "express": "^4.14.0",
     "mongoose": "^4.6.6",
