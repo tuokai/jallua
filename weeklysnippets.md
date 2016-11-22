@@ -9,6 +9,8 @@ Timo:
 - Managed to shrink the Angular 2 Hello World example from 1.4MB to 0.5MB (before minimization) in a rather reasonable workflow
 - Next week: learn about Angular 2 itself, start working on actual client functionality
 
+A useful article: [Building an Angular 2 Application for Production](http://blog.mgechev.com/2016/06/26/tree-shaking-angular2-production-build-rollup-javascript/) (ES2015 module tree-shaking, Angular ahead-of-time compilation)
+
 Tuomas
 
 - Chose Node as the backend implementation technology
@@ -25,3 +27,12 @@ Tuomas
 
 [GeoJSON]: <https://docs.mongodb.com/v3.2/reference/geojson/>
 [mLab]: <https://mlab.com>
+
+## Week 46
+
+Timo
+
+- Went through the [Angular 2 tutorial](https://angular.io/docs/ts/latest/tutorial/)
+- Learned enough Angular for the purpose of this project: the basic concepts and division of concerns
+- Initial data access: built a store listing from the store data using Angular
+- Next week: learn Google Maps usage to get coordinates from user
