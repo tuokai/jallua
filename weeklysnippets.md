@@ -36,3 +36,10 @@ Timo
 - Learned enough Angular for the purpose of this project: the basic concepts and division of concerns
 - Initial data access: built a store listing from the store data using Angular
 - Next week: learn Google Maps usage to get coordinates from user
+
+## Week 47
+
+- Looked into [angular2-google-maps](https://angular-maps.com/)
+- Managed to obtain coordinate from user through manual input from the map component
+- Ran into CORS trouble which will be fixed when the UI and backend are served from the same server
+- Ran into a bigger obstacle: the Alko API has gone down. This will make completing the work hard if not fixed.
