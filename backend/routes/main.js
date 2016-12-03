@@ -16,7 +16,8 @@ module.exports = (app) => {
       const response = stores.map((store) => {
         // Strip out unwanted parts of store object
         const { streetAddress, zipCode, postOffice, storeNumber } = store;
-        return { streetAddress, zipCode, postOffice, storeNumber };
+        const [lng, lat] = store.location.coordinates;
+        return { streetAddress, zipCode, postOffice, storeNumber, lng, lat };
       });
       return res.status(200).json(response);
     });
