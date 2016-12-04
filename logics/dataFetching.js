@@ -99,19 +99,20 @@ const storeWeatherToDb = () => (
       if (!woeids.length) {
         return [];
       }
-      return request
+      return Promise.all(woeids.map(woeid => request
         .get(config.apiUrls.yahoo.yql)
-        .query({ q: `select item.link, item.condition from weather.forecast where woeid in (${woeids.join(',')}) and u='c'` })
+        .query({ q: `select item.link, item.condition from weather.forecast where woeid in (${woeid}) and u='c'` })
         .query({ format: 'json' })
-        .then(res => res.body.query.results.channel);
+        .then(res => (res.body.query.results ? res.body.query.results.channel.item : null))
+      ));
     }, (err) => {
       console.log('db error:', err);
     })
     .then(
-      weatherlist => Promise.all((weatherlist instanceof Array ? weatherlist : [weatherlist])
-        .map(weatheritem => Store.update(
-          { woeid: /[0-9]{6,}/.exec(weatheritem.item.link)[0] },
-          { $set: { condition: weatheritem.item.condition } },
+      weatherlist => Promise.all(
+        weatherlist.filter(wi => wi !== null).map(weatheritem => Store.update(
+          { woeid: /[0-9]{6,}/.exec(weatheritem.link)[0] },
+          { $set: { condition: weatheritem.condition } },
           { multi: true }
         ))
       ), err => console.log('Error: failed to get weathers, error:', err)
