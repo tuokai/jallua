@@ -9,6 +9,13 @@ const storeSchema = mongoose.Schema({
     type: { type: String, default: 'Point' },
     coordinates: [Number], // [Long, Lat]
   },
+  woeid: Number,
+  condition: {
+    date: String,
+    temp: Number,
+    code: Number,
+    text: String,
+  },
   created_at: { type: Date, default: Date.now },
   updated_at: { type: Date, default: Date.now },
 });

@@ -8,9 +8,13 @@
       "maps": {
         "geocode": "https://maps.googleapis.com/maps/api/geocode"
       }
+    },
+    "yahoo": {
+      "yql": "https://query.yahooapis.com/v1/public/yql"
     }
   },
   "apiKeys": {
     "google": "<YOUR_API_KEY>"
-  }
+  },
+  "weatherRefreshInterval": 30000
 }

@@ -8,6 +8,8 @@ const dataHandling = require('./dataHandling');
 
 const Store = mongoose.models.Store;
 
+let lastWeatherUpdate = new Date(0);
+
 const fetchAddresses = () => (
   request
     .get(config.apiUrls.alko.tsvAddresses)
@@ -30,7 +32,7 @@ const mapAddressToCoordinates = (address) => {
     });
 };
 
-const storeAddressesToDb = () => {
+const storeAddressesToDb = () => (
   fetchAddresses().then((addresses) => {
     const parsed = dataHandling.parseAddressResponse(addresses);
     parsed.forEach((item) => {
@@ -64,11 +66,71 @@ const storeAddressesToDb = () => {
     });
     console.log('Address data fetched & saved to db');
   })
-  .catch(err => console.log(err));
-};
+  .catch(err => console.log(err))
+);
+
+const storeWoeidsToDb = () => (
+  Store.find({ woeid: null })
+    .then((stores) => {
+      if (!stores.length) {
+        return [];
+      }
+      const zips = stores.map(store => store.zipCode).join(',');
+      return request
+        .get(config.apiUrls.yahoo.yql)
+        .query({ q: `select woeid, postal.content from geo.places(1) where placetype=11 and text in (${zips}) and focus="FI"` })
+        .query({ format: 'json' })
+        .then(res => res.body.query.results.place);
+    }, err => console.log('db error:', err)
+    ).then(
+      woelist => Promise.all(
+        (woelist instanceof Array ? woelist : [woelist]).map(woeitem => Store.update(
+            { woeid: null, zipCode: woeitem.postal },
+            { $set: { woeid: woeitem.woeid } },
+            { multi: true }
+        ))
+      ), err => console.log('Error: failed to get woeids, error:', err)
+    )
+);
+
+const storeWeatherToDb = () => (
+  Store.find().distinct('woeid')
+    .then((woeids) => {
+      if (!woeids.length) {
+        return [];
+      }
+      return request
+        .get(config.apiUrls.yahoo.yql)
+        .query({ q: `select item.link, item.condition from weather.forecast where woeid in (${woeids.join(',')}) and u='c'` })
+        .query({ format: 'json' })
+        .then(res => res.body.query.results.channel);
+    }, (err) => {
+      console.log('db error:', err);
+    })
+    .then(
+      weatherlist => Promise.all((weatherlist instanceof Array ? weatherlist : [weatherlist])
+        .map(weatheritem => Store.update(
+          { woeid: /[0-9]{6,}/.exec(weatheritem.item.link)[0] },
+          { $set: { condition: weatheritem.item.condition } },
+          { multi: true }
+        ))
+      ), err => console.log('Error: failed to get weathers, error:', err)
+    )
+    .then(() => { lastWeatherUpdate = new Date(); })
+);
 
 const updateDb = () => {
-  storeAddressesToDb();
+  storeAddressesToDb()
+    .then(storeWoeidsToDb)
+    .then(storeWeatherToDb);
 };
 
+const refreshWeather = () => (
+  ((new Date()) - lastWeatherUpdate) > config.weatherRefreshInterval ?
+    storeWoeidsToDb().then(storeWeatherToDb)
+    :
+    Promise.resolve(null)
+);
+
 exports.updateDb = updateDb;
+exports.refreshWeather = refreshWeather;
