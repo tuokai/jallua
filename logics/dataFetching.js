@@ -81,15 +81,15 @@ const storeWoeidsToDb = () => (
         .query({ q: `select woeid, postal.content from geo.places(1) where placetype=11 and text in (${zips}) and focus="FI"` })
         .query({ format: 'json' })
         .then(res => res.body.query.results.place);
-    }, err => console.log('db error:', err)
+    }, err => console.log('db error:', err),
     ).then(
       woelist => Promise.all(
         (woelist instanceof Array ? woelist : [woelist]).map(woeitem => Store.update(
             { woeid: null, zipCode: woeitem.postal },
             { $set: { woeid: woeitem.woeid } },
-            { multi: true }
-        ))
-      ), err => console.log('Error: failed to get woeids, error:', err)
+            { multi: true },
+        )),
+      ), err => console.log('Error: failed to get woeids, error:', err),
     )
 );
 
@@ -112,9 +112,9 @@ const storeWeatherToDb = () => (
         .map(weatheritem => Store.update(
           { woeid: /[0-9]{6,}/.exec(weatheritem.item.link)[0] },
           { $set: { condition: weatheritem.item.condition } },
-          { multi: true }
-        ))
-      ), err => console.log('Error: failed to get weathers, error:', err)
+          { multi: true },
+        )),
+      ), err => console.log('Error: failed to get weathers, error:', err),
     )
     .then(() => { lastWeatherUpdate = new Date(); })
 );
