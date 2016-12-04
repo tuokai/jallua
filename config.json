@@ -16,5 +16,5 @@
   "apiKeys": {
     "google": "<YOUR_API_KEY>"
   },
-  "weatherRefreshInterval": 30000
+  "weatherRefreshInterval": 1800000
 }
