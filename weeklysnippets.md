@@ -45,3 +45,21 @@ Timo
 - Managed to obtain coordinate from user through manual input from the map component
 - Ran into CORS trouble which will be fixed when the UI and backend are served from the same server
 - Ran into a bigger obstacle: the Alko API has gone down. This will make completing the work hard if not fixed.
+
+## Week 48
+
+This week we noticed the Alko product API has been discontinued and we had to pivot. We chose to get weather conditions for the stores.
+
+Timo
+
+- Client-side
+   - Changed the client UI to consist only of a map view, with details (including the new weather info) on markers
+   - Minified client to save bandwidth
+   - Transpile client to ES5 to support IE11; learned more about support for different ES versions
+   - Setup autodeploy on Heroku; this was pleasantly easy
+- Backend-side
+   - Added CORS to make the public API usable by third-party SPAs
+   - Added Yahoo! Weather data fetching to backend
+- Lessons learned
+   - Start deployments to livelike environments early
+   - Develop using a realistic-sized dataset
