@@ -3,6 +3,7 @@ module.exports = {
   "rules": {
     "no-console": "off",
     "global-require": "off",
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
+    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
+    "comma-dangle": "off",
   }
 };
