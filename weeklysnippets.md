@@ -39,6 +39,8 @@ Timo
 
 ## Week 47
 
+Timo
+
 - Looked into [angular2-google-maps](https://angular-maps.com/)
 - Managed to obtain coordinate from user through manual input from the map component
 - Ran into CORS trouble which will be fixed when the UI and backend are served from the same server
