@@ -71,7 +71,7 @@ The used technologies are MongoDB for persistence, Node.js (Express) in backend 
 
 ---
 
-Made as an assignment work for TUT's course "TIE-23600, Palvelupohjaiset järjestelmät".
+Made as an assignment work for TUT's course "TIE-23600, Palvelupohjaiset järjestelmät". Authors: tuomas.kaittola æt student.tut.fi and timo.kalliomaki æt student.tut.fi.
 
 [Alko tuotehaku API]: <http://apisuomi.fi/shop/json/alko-tuotehaku-api/>
 [Google maps geocoding API]: <https://developers.google.com/maps/documentation/geocoding/>
